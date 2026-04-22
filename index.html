@@ -1,0 +1,692 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Birmarket Portfolio</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+<style>
+:root {
+  --bg: #0e0f11;
+  --bg2: #16181c;
+  --bg3: #1e2126;
+  --border: #2a2d35;
+  --text: #e8eaf0;
+  --muted: #6b7280;
+  --green: #22c55e;
+  --green-dim: #15803d;
+  --blue: #3b82f6;
+  --orange: #f59e0b;
+  --red: #ef4444;
+  --accent: #22c55e;
+  --radius: 10px;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;font-size:14px;}
+h1,h2,h3,.logo{font-family:'Syne',sans-serif;}
+
+/* LOGIN */
+#login-page{display:flex;align-items:center;justify-content:center;min-height:100vh;background:var(--bg);}
+.login-box{background:var(--bg2);border:1px solid var(--border);border-radius:16px;padding:40px;width:360px;}
+.login-logo{font-size:22px;font-weight:700;color:var(--text);margin-bottom:6px;}
+.login-logo span{color:var(--green);}
+.login-sub{font-size:13px;color:var(--muted);margin-bottom:28px;}
+.field{margin-bottom:16px;}
+.field label{display:block;font-size:12px;color:var(--muted);margin-bottom:6px;text-transform:uppercase;letter-spacing:.05em;}
+.field input{width:100%;background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:10px 12px;color:var(--text);font-size:14px;font-family:'DM Sans',sans-serif;outline:none;transition:border-color .2s;}
+.field input:focus{border-color:var(--green);}
+.btn-login{width:100%;background:var(--green);color:#0a0f0a;font-family:'Syne',sans-serif;font-weight:600;font-size:14px;padding:11px;border:none;border-radius:8px;cursor:pointer;transition:opacity .15s;}
+.btn-login:hover{opacity:.9;}
+.login-hint{margin-top:20px;background:var(--bg3);border-radius:8px;padding:12px;font-size:12px;color:var(--muted);line-height:1.8;}
+.login-hint strong{color:var(--text);}
+.err{color:var(--red);font-size:12px;margin-top:8px;}
+
+/* LAYOUT */
+#app{display:none;min-height:100vh;}
+.sidebar{position:fixed;left:0;top:0;bottom:0;width:220px;background:var(--bg2);border-right:1px solid var(--border);display:flex;flex-direction:column;z-index:10;}
+.sidebar-logo{padding:20px;font-size:18px;font-weight:700;border-bottom:1px solid var(--border);}
+.sidebar-logo span{color:var(--green);}
+.sidebar-role{padding:8px 16px 12px;font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;}
+.nav{flex:1;padding:8px;}
+.nav-item{display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:8px;cursor:pointer;color:var(--muted);font-size:13px;transition:all .15s;margin-bottom:2px;}
+.nav-item:hover{background:var(--bg3);color:var(--text);}
+.nav-item.active{background:var(--green);color:#0a0f0a;font-weight:500;}
+.nav-item svg{flex-shrink:0;}
+.sidebar-user{padding:14px 16px;border-top:1px solid var(--border);}
+.user-name{font-size:13px;font-weight:500;}
+.user-role{font-size:11px;color:var(--muted);margin-top:1px;}
+.btn-logout{width:100%;background:var(--bg3);border:1px solid var(--border);color:var(--muted);padding:7px;border-radius:7px;font-size:12px;cursor:pointer;margin-top:10px;transition:all .15s;}
+.btn-logout:hover{border-color:var(--red);color:var(--red);}
+
+.main{margin-left:220px;padding:24px;min-height:100vh;}
+.page{display:none;}
+.page.active{display:block;}
+.page-title{font-size:22px;font-weight:700;margin-bottom:4px;}
+.page-sub{font-size:13px;color:var(--muted);margin-bottom:20px;}
+
+/* CARDS */
+.kpi-row{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px;}
+.kpi{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:16px;}
+.kpi-label{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:8px;}
+.kpi-val{font-size:24px;font-weight:700;font-family:'Syne',sans-serif;}
+.kpi-sub{font-size:11px;color:var(--muted);margin-top:4px;}
+.green{color:var(--green);}
+.orange{color:var(--orange);}
+.red{color:var(--red);}
+.blue{color:var(--blue);}
+
+/* TABLE */
+.panel{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;margin-bottom:16px;}
+.panel-head{padding:14px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;}
+.panel-title{font-size:14px;font-weight:600;font-family:'Syne',sans-serif;}
+.filters{display:flex;gap:6px;align-items:center;flex-wrap:wrap;}
+.pill{font-size:11px;padding:4px 10px;border-radius:20px;border:1px solid var(--border);cursor:pointer;color:var(--muted);background:transparent;transition:all .12s;font-family:'DM Sans',sans-serif;}
+.pill.on{background:var(--green);color:#0a0f0a;border-color:var(--green);font-weight:500;}
+select,input[type=text]{font-size:12px;padding:5px 8px;border:1px solid var(--border);border-radius:7px;background:var(--bg3);color:var(--text);outline:none;font-family:'DM Sans',sans-serif;}
+select:focus,input[type=text]:focus{border-color:var(--green);}
+.tbl-wrap{overflow-x:auto;max-height:480px;overflow-y:auto;}
+table{width:100%;border-collapse:collapse;font-size:13px;}
+th{font-size:10px;font-weight:500;color:var(--muted);text-align:left;padding:8px 12px;border-bottom:1px solid var(--border);text-transform:uppercase;letter-spacing:.04em;white-space:nowrap;position:sticky;top:0;background:var(--bg2);}
+td{padding:9px 12px;border-bottom:1px solid var(--border);vertical-align:middle;}
+tr:last-child td{border-bottom:none;}
+tr:hover td{background:var(--bg3);cursor:pointer;}
+.p-name{font-weight:500;}
+.p-bdm{font-size:11px;color:var(--muted);}
+.seg{font-size:10px;padding:2px 8px;border-radius:10px;font-weight:600;display:inline-block;}
+.seg-A{background:#14532d;color:#4ade80;}
+.seg-B{background:#1e3a5f;color:#60a5fa;}
+.seg-C{background:#451a03;color:#fbbf24;}
+.seg-D{background:#1f2937;color:#9ca3af;}
+.bar-wrap{display:flex;align-items:center;gap:6px;}
+.bar-bg{height:4px;background:var(--bg3);border-radius:3px;flex:1;min-width:50px;}
+.bar-fill{height:4px;border-radius:3px;background:var(--green);}
+.sku-badge{font-size:10px;padding:1px 7px;border-radius:8px;}
+.sku-low{background:#451a03;color:#fbbf24;}
+.sku-ok{background:#14532d;color:#4ade80;}
+.sku-na{background:var(--bg3);color:var(--muted);}
+
+/* PARTNER DRAWER */
+.drawer-overlay{position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:100;display:none;}
+.drawer-overlay.open{display:block;}
+.drawer{position:fixed;right:0;top:0;bottom:0;width:480px;background:var(--bg2);border-left:1px solid var(--border);z-index:101;display:flex;flex-direction:column;transform:translateX(100%);transition:transform .25s ease;}
+.drawer.open{transform:translateX(0);}
+.drawer-head{padding:18px 20px;border-bottom:1px solid var(--border);display:flex;align-items:flex-start;justify-content:space-between;}
+.drawer-close{background:var(--bg3);border:1px solid var(--border);color:var(--muted);width:28px;height:28px;border-radius:6px;cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center;}
+.drawer-close:hover{color:var(--text);}
+.drawer-body{flex:1;overflow-y:auto;padding:16px 20px;}
+.drawer-tabs{display:flex;gap:2px;background:var(--bg3);border-radius:8px;padding:3px;margin-bottom:16px;}
+.dtab{flex:1;text-align:center;font-size:12px;padding:6px;border-radius:6px;cursor:pointer;color:var(--muted);transition:all .15s;}
+.dtab.active{background:var(--bg2);color:var(--text);font-weight:500;}
+.stat-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px;}
+.stat-box{background:var(--bg3);border-radius:8px;padding:12px;}
+.stat-label{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;margin-bottom:4px;}
+.stat-val{font-size:18px;font-weight:700;font-family:'Syne',sans-serif;}
+
+/* COMMENTS */
+.comments-list{display:flex;flex-direction:column;gap:8px;margin-bottom:12px;max-height:300px;overflow-y:auto;}
+.comment{background:var(--bg3);border-radius:8px;padding:10px 12px;}
+.comment-meta{font-size:11px;color:var(--muted);margin-bottom:4px;display:flex;justify-content:space-between;}
+.comment-author{font-weight:500;color:var(--text);}
+.comment-text{font-size:13px;line-height:1.5;}
+.comment-input-row{display:flex;gap:8px;}
+.comment-input{flex:1;background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:8px 10px;color:var(--text);font-size:13px;font-family:'DM Sans',sans-serif;outline:none;resize:none;min-height:60px;}
+.comment-input:focus{border-color:var(--green);}
+
+/* TASKS */
+.task-item{background:var(--bg3);border-radius:8px;padding:10px 12px;margin-bottom:6px;display:flex;align-items:flex-start;gap:10px;}
+.task-check{width:16px;height:16px;border-radius:4px;border:1.5px solid var(--border);cursor:pointer;flex-shrink:0;margin-top:2px;display:flex;align-items:center;justify-content:center;transition:all .15s;}
+.task-check.done{background:var(--green);border-color:var(--green);}
+.task-title{font-size:13px;flex:1;}
+.task-title.done{text-decoration:line-through;color:var(--muted);}
+.task-meta{font-size:10px;color:var(--muted);margin-top:2px;}
+.prio{font-size:10px;padding:1px 6px;border-radius:6px;}
+.prio-high{background:#450a0a;color:#f87171;}
+.prio-medium{background:#451a03;color:#fbbf24;}
+.prio-low{background:#14532d;color:#4ade80;}
+.add-task-form{background:var(--bg3);border-radius:8px;padding:12px;margin-top:10px;}
+.add-task-form input,.add-task-form select{width:100%;margin-bottom:8px;}
+
+/* BUTTONS */
+.btn{font-size:12px;padding:7px 14px;border-radius:7px;cursor:pointer;border:none;font-family:'DM Sans',sans-serif;font-weight:500;transition:all .15s;}
+.btn-green{background:var(--green);color:#0a0f0a;}
+.btn-green:hover{opacity:.9;}
+.btn-ghost{background:var(--bg3);color:var(--text);border:1px solid var(--border);}
+.btn-ghost:hover{border-color:var(--green);color:var(--green);}
+
+/* BDM PAGE */
+.bdm-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;}
+.bdm-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:16px;}
+.bdm-name{font-size:15px;font-weight:600;font-family:'Syne',sans-serif;margin-bottom:4px;}
+.bdm-gmv{font-size:22px;font-weight:700;color:var(--green);margin:8px 0 4px;font-family:'Syne',sans-serif;}
+.bdm-meta{font-size:12px;color:var(--muted);margin-bottom:10px;}
+.segs{display:flex;gap:4px;flex-wrap:wrap;}
+.bdm-bar-row{display:flex;justify-content:space-between;font-size:11px;margin-bottom:3px;}
+.bdm-bar-bg{height:5px;background:var(--bg3);border-radius:3px;margin-bottom:8px;}
+.bdm-bar-f{height:5px;border-radius:3px;}
+.sku-line{font-size:12px;color:var(--muted);margin-top:8px;}
+
+/* ALERT */
+.alert{background:#14532d;border:1px solid #166534;border-radius:8px;padding:10px 14px;font-size:13px;color:#4ade80;margin-bottom:12px;}
+.alert-warn{background:#451a03;border-color:#92400e;color:#fbbf24;}
+
+/* PROGRESS RING */
+.ring-wrap{display:flex;justify-content:center;margin:8px 0 16px;}
+svg.ring{transform:rotate(-90deg);}
+
+/* EMPTY */
+.empty{text-align:center;padding:30px;color:var(--muted);font-size:13px;}
+
+/* Scrollbar */
+::-webkit-scrollbar{width:6px;height:6px;}
+::-webkit-scrollbar-track{background:var(--bg2);}
+::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px;}
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="login-page">
+  <div class="login-box">
+    <div class="login-logo">Bir<span>market</span></div>
+    <div class="login-sub">Portfolio Management Platform</div>
+    <div class="field"><label>Логин</label><input type="text" id="l-user" placeholder="username"/></div>
+    <div class="field"><label>Пароль</label><input type="password" id="l-pass" placeholder="••••••" onkeydown="if(event.key==='Enter')doLogin()"/></div>
+    <button class="btn-login" onclick="doLogin()">Войти</button>
+    <div id="l-err" class="err"></div>
+    <div class="login-hint">
+      <strong>Роли и логины:</strong><br>
+      admin / admin123 — Администратор<br>
+      cco / cco123 — CCO (всё)<br>
+      aslan / aslan123 — BDM Аслан<br>
+      maya / maya123 — BDM Майя<br>
+      movsum / movsum123 — BDM Мовсум<br>
+      zamir / zamir123 — BDM Замир<br>
+      ayten / ayten123 — BDM Айтен
+    </div>
+  </div>
+</div>
+
+<!-- APP -->
+<div id="app">
+  <div class="sidebar">
+    <div class="sidebar-logo">Bir<span>market</span></div>
+    <div class="sidebar-role" id="s-role">—</div>
+    <nav class="nav">
+      <div class="nav-item active" onclick="gotoPage('dashboard',this)">
+        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+        Дашборд
+      </div>
+      <div class="nav-item" onclick="gotoPage('partners',this)">
+        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+        Портфель
+      </div>
+      <div class="nav-item bdm-only" onclick="gotoPage('bdms',this)" id="nav-bdms">
+        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M12 20V10"/><path d="M18 20V4"/><path d="M6 20v-4"/></svg>
+        BDM-ы
+      </div>
+      <div class="nav-item" onclick="gotoPage('tasks',this)">
+        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+        Задачи
+      </div>
+    </nav>
+    <div class="sidebar-user">
+      <div class="user-name" id="s-user">—</div>
+      <div class="user-role" id="s-role2">—</div>
+      <button class="btn-logout" onclick="doLogout()">Выйти</button>
+    </div>
+  </div>
+
+  <div class="main">
+
+    <!-- DASHBOARD -->
+    <div class="page active" id="page-dashboard">
+      <div class="page-title" id="dash-title">Портфель</div>
+      <div class="page-sub" id="dash-sub">Обзор портфеля</div>
+      <div class="kpi-row" id="kpi-row"></div>
+      <div id="dash-alert"></div>
+      <div class="panel">
+        <div class="panel-head">
+          <div class="panel-title">Топ партнёры по GMV</div>
+        </div>
+        <div class="tbl-wrap">
+          <table>
+            <thead><tr><th>#</th><th>Партнер</th><th>Приоритет</th><th>GMV</th><th>Доля</th><th>SKU</th></tr></thead>
+            <tbody id="dash-table"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- PARTNERS -->
+    <div class="page" id="page-partners">
+      <div class="page-title">Портфель партнёров</div>
+      <div class="page-sub" id="partners-sub">Полный список</div>
+      <div class="panel">
+        <div class="panel-head">
+          <div class="filters">
+            <button class="pill on" onclick="fCat(this,'all')">Все</button>
+            <button class="pill" onclick="fCat(this,'A')">A</button>
+            <button class="pill" onclick="fCat(this,'B')">B</button>
+            <button class="pill" onclick="fCat(this,'C')">C</button>
+            <input type="text" id="search-inp" placeholder="Поиск..." oninput="renderPartners()" style="width:140px;"/>
+          </div>
+          <div id="partners-count" style="font-size:12px;color:var(--muted);"></div>
+        </div>
+        <div class="tbl-wrap">
+          <table>
+            <thead><tr><th>#</th><th>Партнер</th><th>BDM</th><th>Приор.</th><th>GMV</th><th>Доля</th><th>SKU</th><th>Заказы</th><th></th></tr></thead>
+            <tbody id="partners-table"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- BDMS -->
+    <div class="page" id="page-bdms">
+      <div class="page-title">BDM-ы</div>
+      <div class="page-sub">Портфель и метрики по каждому BDM</div>
+      <div class="bdm-grid" id="bdm-grid"></div>
+    </div>
+
+    <!-- TASKS -->
+    <div class="page" id="page-tasks">
+      <div class="page-title">Задачи</div>
+      <div class="page-sub">Все открытые задачи по партнёрам</div>
+      <div class="panel">
+        <div class="panel-head"><div class="panel-title">Все задачи</div></div>
+        <div id="all-tasks-list" style="padding:12px;"></div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- DRAWER -->
+<div class="drawer-overlay" id="overlay" onclick="closeDrawer()"></div>
+<div class="drawer" id="drawer">
+  <div class="drawer-head">
+    <div>
+      <div style="font-size:17px;font-weight:700;font-family:'Syne',sans-serif;" id="dr-name"></div>
+      <div style="font-size:12px;color:var(--muted);margin-top:2px;" id="dr-meta"></div>
+    </div>
+    <button class="drawer-close" onclick="closeDrawer()">✕</button>
+  </div>
+  <div class="drawer-body">
+    <div class="drawer-tabs">
+      <div class="dtab active" onclick="drTab(this,'info')">Инфо</div>
+      <div class="dtab" onclick="drTab(this,'comments')">Комментарии</div>
+      <div class="dtab" onclick="drTab(this,'tasks')">Задачи</div>
+    </div>
+    <div id="dr-info"></div>
+    <div id="dr-comments" style="display:none;"></div>
+    <div id="dr-tasks" style="display:none;"></div>
+  </div>
+</div>
+
+<script>
+const API = window.location.origin + '/api';
+let TOKEN = localStorage.getItem('bm_token');
+let USER = null;
+let PARTNERS = [];
+let currentCat = 'all';
+let currentPartner = null;
+
+// ── AUTH ─────────────────────────────────────────────────
+async function doLogin() {
+  const u = document.getElementById('l-user').value.trim();
+  const p = document.getElementById('l-pass').value.trim();
+  if (!u || !p) return;
+  try {
+    const r = await api('POST', '/login', {username: u, password: p}, false);
+    TOKEN = r.token;
+    localStorage.setItem('bm_token', TOKEN);
+    USER = r;
+    startApp();
+  } catch(e) {
+    document.getElementById('l-err').textContent = e.message || 'Ошибка входа';
+  }
+}
+
+function doLogout() {
+  TOKEN = null; USER = null;
+  localStorage.removeItem('bm_token');
+  document.getElementById('app').style.display = 'none';
+  document.getElementById('login-page').style.display = 'flex';
+}
+
+// ── API ───────────────────────────────────────────────────
+async function api(method, path, body, auth=true) {
+  const headers = {'Content-Type': 'application/json'};
+  if (auth && TOKEN) headers['Authorization'] = 'Bearer ' + TOKEN;
+  const r = await fetch(API + path, {method, headers, body: body ? JSON.stringify(body) : undefined});
+  if (!r.ok) {
+    const e = await r.json().catch(() => ({detail: 'Ошибка'}));
+    throw new Error(e.detail || 'Ошибка');
+  }
+  return r.json();
+}
+
+// ── INIT ──────────────────────────────────────────────────
+async function startApp() {
+  if (!TOKEN) return;
+  try {
+    if (!USER) USER = await api('GET', '/me');
+  } catch { doLogout(); return; }
+
+  document.getElementById('login-page').style.display = 'none';
+  document.getElementById('app').style.display = 'block';
+
+  const roleLabel = {admin:'Администратор', cco:'CCO', bdm:'BDM'}[USER.role] || USER.role;
+  document.getElementById('s-user').textContent = USER.username;
+  document.getElementById('s-role').textContent = roleLabel;
+  document.getElementById('s-role2').textContent = USER.bdm_name || roleLabel;
+
+  // Hide BDM page for BDM role
+  if (USER.role === 'bdm') {
+    document.getElementById('nav-bdms').style.display = 'none';
+  }
+
+  await loadPartners();
+  renderDashboard();
+}
+
+async function loadPartners() {
+  PARTNERS = await api('GET', '/partners');
+}
+
+// ── DASHBOARD ─────────────────────────────────────────────
+async function renderDashboard() {
+  const stats = await api('GET', '/stats');
+  const isBdm = USER.role === 'bdm';
+  const title = isBdm ? `Мой портфель · ${USER.bdm_name}` : 'Портфель BDM';
+  document.getElementById('dash-title').textContent = title;
+  document.getElementById('dash-sub').textContent = `${stats.total_partners} партнёров · GMV ₼${fmt(stats.total_gmv)}`;
+
+  const bdmPct = stats.bdm_pct;
+  const gapColor = bdmPct >= 70 ? 'green' : bdmPct >= 65 ? 'orange' : 'red';
+
+  let kpiHtml = `
+    <div class="kpi">
+      <div class="kpi-label">GMV портфеля</div>
+      <div class="kpi-val green">₼${fmt(stats.total_gmv)}</div>
+      <div class="kpi-sub">${stats.total_partners} партнёров</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-label">A-приоритет</div>
+      <div class="kpi-val">₼${fmt(stats.by_category?.A?.gmv || 0)}</div>
+      <div class="kpi-sub">${stats.by_category?.A?.count || 0} партнёров</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-label">B-приоритет</div>
+      <div class="kpi-val blue">₼${fmt(stats.by_category?.B?.gmv || 0)}</div>
+      <div class="kpi-sub">${stats.by_category?.B?.count || 0} партнёров</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-label">Активные SKU</div>
+      <div class="kpi-val">₼${(stats.total_sku/1000).toFixed(0)}K</div>
+      <div class="kpi-sub">avg ${Math.round(stats.total_sku/(stats.total_partners||1))} / партнёр</div>
+    </div>`;
+
+  if (!isBdm) {
+    kpiHtml = `
+      <div class="kpi">
+        <div class="kpi-label">BDM доля вертикали</div>
+        <div class="kpi-val ${gapColor}">${bdmPct}%</div>
+        <div class="kpi-sub">цель 70% · ₼${fmt(stats.vertical_gmv * 0.7 - stats.total_gmv)} gap</div>
+      </div>` + kpiHtml;
+  }
+
+  document.getElementById('kpi-row').innerHTML = kpiHtml;
+
+  // Alert
+  let alert = '';
+  if (!isBdm && bdmPct < 70) {
+    alert = `<div class="alert alert-warn">⚠️ BDM доля ${bdmPct}% — ниже цели 70%. Нужно +₼${fmt(Math.round(stats.vertical_gmv * 0.7 - stats.total_gmv))} GMV для достижения таргета.</div>`;
+  }
+  document.getElementById('dash-alert').innerHTML = alert;
+
+  // Top 10 table
+  const top = [...PARTNERS].slice(0,10);
+  const maxGmv = top[0]?.gmv || 1;
+  document.getElementById('dash-table').innerHTML = top.map((p,i) => `
+    <tr onclick="openPartner(${p.id})">
+      <td style="color:var(--muted);font-size:11px;">${i+1}</td>
+      <td><div class="p-name">${p.name}</div>${!isBdm ? `<div class="p-bdm">${p.bdm}</div>` : ''}</td>
+      <td><span class="seg seg-${p.category}">${p.category}</span></td>
+      <td style="font-weight:600;">₼${fmt(p.gmv)}</td>
+      <td><div class="bar-wrap"><div class="bar-bg"><div class="bar-fill" style="width:${Math.round(p.gmv/maxGmv*100)}%"></div></div><span style="font-size:10px;color:var(--muted);min-width:32px;">${(p.gmv/stats.total_gmv*100).toFixed(1)}%</span></div></td>
+      <td>${skuBadge(p.sku)}</td>
+    </tr>`).join('');
+}
+
+// ── PARTNERS PAGE ──────────────────────────────────────────
+function renderPartners() {
+  const q = (document.getElementById('search-inp')?.value || '').toLowerCase();
+  const filtered = PARTNERS.filter(p => {
+    const catOk = currentCat === 'all' || p.category === currentCat;
+    const qOk = !q || p.name.toLowerCase().includes(q) || p.bdm.toLowerCase().includes(q);
+    return catOk && qOk;
+  });
+  document.getElementById('partners-sub').textContent = `${filtered.length} партнёров`;
+  document.getElementById('partners-count').textContent = filtered.length + ' найдено';
+  const maxGmv = PARTNERS[0]?.gmv || 1;
+  const totalGmv = PARTNERS.reduce((s,p) => s+p.gmv, 0);
+  const isBdm = USER.role === 'bdm';
+  document.getElementById('partners-table').innerHTML = filtered.map((p,i) => `
+    <tr onclick="openPartner(${p.id})">
+      <td style="color:var(--muted);font-size:11px;">${i+1}</td>
+      <td><div class="p-name">${p.name}</div></td>
+      <td style="font-size:12px;color:var(--muted);">${isBdm ? '' : p.bdm}</td>
+      <td><span class="seg seg-${p.category}">${p.category}</span></td>
+      <td style="font-weight:600;">₼${fmt(p.gmv)}</td>
+      <td><div class="bar-wrap"><div class="bar-bg"><div class="bar-fill" style="width:${Math.round(p.gmv/maxGmv*100)}%"></div></div><span style="font-size:10px;color:var(--muted);min-width:30px;">${(p.gmv/totalGmv*100).toFixed(1)}%</span></div></td>
+      <td>${skuBadge(p.sku)}</td>
+      <td style="font-size:12px;color:var(--muted);">${p.orders?.toLocaleString() || '—'}</td>
+      <td><button class="btn btn-ghost" style="font-size:11px;padding:4px 9px;" onclick="event.stopPropagation();openPartner(${p.id})">Открыть →</button></td>
+    </tr>`).join('');
+}
+
+function fCat(btn, cat) {
+  currentCat = cat;
+  document.querySelectorAll('.pill').forEach(p => p.classList.remove('on'));
+  btn.classList.add('on');
+  renderPartners();
+}
+
+// ── BDM PAGE ───────────────────────────────────────────────
+function renderBdms() {
+  const bdmMap = {};
+  PARTNERS.forEach(p => {
+    if (!bdmMap[p.bdm]) bdmMap[p.bdm] = {name:p.bdm, partners:[], gmv:0, sku:0, a:0, b:0, c:0};
+    const b = bdmMap[p.bdm];
+    b.partners.push(p); b.gmv += p.gmv; b.sku += p.sku || 0;
+    if (p.category==='A') b.a++;
+    if (p.category==='B') b.b++;
+    if (p.category==='C') b.c++;
+  });
+  const bdms = Object.values(bdmMap).sort((a,b) => b.gmv - a.gmv);
+  const maxGmv = bdms[0]?.gmv || 1;
+  const totalBdmGmv = bdms.reduce((s,b) => s+b.gmv, 0);
+  document.getElementById('bdm-grid').innerHTML = bdms.map(b => `
+    <div class="bdm-card">
+      <div class="bdm-name">${b.name}</div>
+      <div class="bdm-gmv">₼${fmt(b.gmv)}</div>
+      <div class="bdm-meta">${b.partners.length} партнёров · ${(b.gmv/totalBdmGmv*100).toFixed(0)}% BDM GMV</div>
+      <div class="bdm-bar-row"><span style="font-size:10px;color:var(--muted);">Доля</span><span style="font-size:10px;color:var(--muted);">${(b.gmv/totalBdmGmv*100).toFixed(1)}%</span></div>
+      <div class="bdm-bar-bg"><div class="bdm-bar-f" style="width:${Math.round(b.gmv/maxGmv*100)}%;background:var(--green);"></div></div>
+      <div class="segs">
+        <span class="seg seg-A">A·${b.a}</span>
+        <span class="seg seg-B">B·${b.b}</span>
+        <span class="seg seg-C">C·${b.c}</span>
+      </div>
+      <div class="sku-line">SKU: <strong>${b.sku.toLocaleString()}</strong> · avg <strong>${Math.round(b.sku/(b.partners.length||1))}</strong></div>
+    </div>`).join('');
+}
+
+// ── ALL TASKS ──────────────────────────────────────────────
+async function renderAllTasks() {
+  // Aggregate tasks from all partners (simplified: show per partner list)
+  document.getElementById('all-tasks-list').innerHTML = '<div class="empty">Откройте партнёра чтобы увидеть его задачи, или задачи появятся здесь.</div>';
+}
+
+// ── DRAWER ────────────────────────────────────────────────
+async function openPartner(id) {
+  currentPartner = PARTNERS.find(p => p.id === id);
+  if (!currentPartner) return;
+  const p = currentPartner;
+  document.getElementById('dr-name').textContent = p.name;
+  document.getElementById('dr-meta').textContent = `${p.bdm} · ${p.category}-приоритет · ₼${fmt(p.gmv)} GMV`;
+  document.getElementById('drawer').classList.add('open');
+  document.getElementById('overlay').classList.add('open');
+
+  // Info tab
+  const totalGmv = PARTNERS.reduce((s,x) => s+x.gmv, 0);
+  document.getElementById('dr-info').innerHTML = `
+    <div class="stat-grid">
+      <div class="stat-box"><div class="stat-label">GMV</div><div class="stat-val green">₼${fmt(p.gmv)}</div></div>
+      <div class="stat-box"><div class="stat-label">Доля портфеля</div><div class="stat-val">${(p.gmv/totalGmv*100).toFixed(1)}%</div></div>
+      <div class="stat-box"><div class="stat-label">Активные SKU</div><div class="stat-val">${p.sku > 0 ? p.sku.toLocaleString() : '—'}</div></div>
+      <div class="stat-box"><div class="stat-label">Заказы</div><div class="stat-val">${p.orders?.toLocaleString() || '—'}</div></div>
+      <div class="stat-box"><div class="stat-label">Средний чек</div><div class="stat-val">${p.avg_check || '—'}</div></div>
+      <div class="stat-box"><div class="stat-label">Приоритет</div><div class="stat-val"><span class="seg seg-${p.category}">${p.category}</span></div></div>
+    </div>
+    <div class="stat-box" style="margin-bottom:10px;">
+      <div class="stat-label">GMV / SKU эффективность</div>
+      <div class="stat-val">${p.sku > 0 ? '₼' + Math.round(p.gmv/p.sku).toLocaleString() : '—'}</div>
+    </div>
+    ${p.sku < 100 && p.sku > 0 ? '<div class="alert alert-warn">⚠️ Мало активных SKU — риск потери доли при появлении конкурентов. Нужно расширить ассортимент.</div>' : ''}
+    ${p.sku === 0 ? '<div class="alert alert-warn">⚠️ Нет данных по SKU — уточните у партнёра.</div>' : ''}`;
+
+  await loadComments();
+  await loadTasks();
+  // Set active tab to info
+  drTab(document.querySelector('.dtab.active'), 'info');
+}
+
+function closeDrawer() {
+  document.getElementById('drawer').classList.remove('open');
+  document.getElementById('overlay').classList.remove('open');
+}
+
+function drTab(btn, tab) {
+  document.querySelectorAll('.dtab').forEach(t => t.classList.remove('active'));
+  btn.classList.add('active');
+  ['info','comments','tasks'].forEach(t => {
+    document.getElementById('dr-'+t).style.display = t === tab ? 'block' : 'none';
+  });
+}
+
+// ── COMMENTS ──────────────────────────────────────────────
+async function loadComments() {
+  if (!currentPartner) return;
+  const comments = await api('GET', `/comments/${currentPartner.id}`);
+  const el = document.getElementById('dr-comments');
+  el.innerHTML = `
+    <div class="comments-list" id="comments-list">
+      ${comments.length ? comments.map(c => `
+        <div class="comment">
+          <div class="comment-meta">
+            <span class="comment-author">@${c.username}</span>
+            <span>${new Date(c.created_at).toLocaleDateString('ru', {day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'})}</span>
+          </div>
+          <div class="comment-text">${escHtml(c.text)}</div>
+        </div>`).join('') : '<div class="empty">Комментариев пока нет</div>'}
+    </div>
+    <div class="comment-input-row">
+      <textarea class="comment-input" id="comment-inp" placeholder="Добавить комментарий..."></textarea>
+    </div>
+    <button class="btn btn-green" style="margin-top:8px;width:100%;" onclick="addComment()">Отправить</button>`;
+}
+
+async function addComment() {
+  const text = document.getElementById('comment-inp')?.value?.trim();
+  if (!text || !currentPartner) return;
+  await api('POST', '/comments', {partner_id: currentPartner.id, text});
+  await loadComments();
+  drTab(document.querySelector('.dtab.active'), 'comments');
+}
+
+// ── TASKS ─────────────────────────────────────────────────
+async function loadTasks() {
+  if (!currentPartner) return;
+  const tasks = await api('GET', `/tasks/${currentPartner.id}`);
+  const el = document.getElementById('dr-tasks');
+  const open = tasks.filter(t => t.status === 'open');
+  const done = tasks.filter(t => t.status === 'done');
+  el.innerHTML = `
+    ${open.map(t => taskHtml(t)).join('')}
+    ${done.length ? `<div style="font-size:11px;color:var(--muted);margin:10px 0 6px;">Выполнено (${done.length})</div>${done.map(t => taskHtml(t)).join('')}` : ''}
+    <div class="add-task-form" style="margin-top:12px;">
+      <div style="font-size:12px;font-weight:500;margin-bottom:8px;">Добавить задачу</div>
+      <input type="text" id="task-title-inp" placeholder="Название задачи..." style="margin-bottom:8px;"/>
+      <select id="task-prio-inp" style="margin-bottom:8px;">
+        <option value="high">🔴 Высокий</option>
+        <option value="medium" selected>🟡 Средний</option>
+        <option value="low">🟢 Низкий</option>
+      </select>
+      <input type="text" id="task-assign-inp" placeholder="Назначить кому (username)..." style="margin-bottom:8px;"/>
+      <button class="btn btn-green" style="width:100%;" onclick="addTask()">Добавить</button>
+    </div>`;
+}
+
+function taskHtml(t) {
+  const isDone = t.status === 'done';
+  return `<div class="task-item">
+    <div class="task-check ${isDone?'done':''}" onclick="toggleTask(${t.id},'${isDone?'open':'done'}')">
+      ${isDone ? '<svg width="10" height="10" viewBox="0 0 10 10" fill="none"><polyline points="1.5,5 4,7.5 8.5,2.5" stroke="white" stroke-width="1.5"/></svg>' : ''}
+    </div>
+    <div style="flex:1;">
+      <div class="task-title ${isDone?'done':''}">${escHtml(t.title)}</div>
+      <div class="task-meta"><span class="prio prio-${t.priority}">${t.priority}</span> · ${t.assigned_to} · ${new Date(t.created_at).toLocaleDateString('ru')}</div>
+    </div>
+  </div>`;
+}
+
+async function addTask() {
+  const title = document.getElementById('task-title-inp')?.value?.trim();
+  const priority = document.getElementById('task-prio-inp')?.value;
+  const assigned_to = document.getElementById('task-assign-inp')?.value?.trim() || USER.username;
+  if (!title || !currentPartner) return;
+  await api('POST', '/tasks', {partner_id: currentPartner.id, title, priority, assigned_to});
+  await loadTasks();
+  drTab(document.querySelector('.dtab.active'), 'tasks');
+}
+
+async function toggleTask(id, newStatus) {
+  await api('PATCH', `/tasks/${id}`, {status: newStatus});
+  await loadTasks();
+  drTab(document.querySelector('.dtab.active'), 'tasks');
+}
+
+// ── NAV ───────────────────────────────────────────────────
+function gotoPage(page, btn) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.getElementById('page-' + page).classList.add('active');
+  btn.classList.add('active');
+  if (page === 'partners') renderPartners();
+  if (page === 'bdms') renderBdms();
+  if (page === 'tasks') renderAllTasks();
+}
+
+// ── UTILS ─────────────────────────────────────────────────
+function fmt(v) {
+  if (!v) return '0';
+  if (v >= 1000000) return (v/1000000).toFixed(2) + 'M';
+  if (v >= 1000) return (v/1000).toFixed(0) + 'K';
+  return Math.round(v).toLocaleString();
+}
+function skuBadge(sku) {
+  if (!sku || sku === 0) return '<span class="sku-badge sku-na">—</span>';
+  if (sku < 100) return `<span class="sku-badge sku-low">${sku}</span>`;
+  return `<span class="sku-badge sku-ok">${sku.toLocaleString()}</span>`;
+}
+function escHtml(s) {
+  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+// ── BOOT ──────────────────────────────────────────────────
+if (TOKEN) startApp();
+</script>
+</body>
+</html>
