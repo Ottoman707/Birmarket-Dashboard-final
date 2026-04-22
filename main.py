@@ -255,6 +255,6 @@ def me(user=Depends(current_user)):
     return user
 
 # Serve frontend
-frontend_path = pathlib.Path(__file__).parent.parent / "frontend"
+frontend_path = pathlib.Path(__file__).parent
 if frontend_path.exists():
     app.mount("/", StaticFiles(directory=str(frontend_path), html=True), name="static")
